@@ -11,8 +11,9 @@ import statsmodels.api as sm
 import pywt
 import copy
 import warnings
-from statsmodels.tsa.arima_model import ARMA
-from sklearn.ensemble.gradient_boosting import GradientBoostingRegressor as GBR
+from statsmodels.tsa.arima.model import ARIMA
+#from statsmodels.tsa.arima_model import ARMA 
+from sklearn.ensemble import GradientBoostingRegressor as GBR
 from sklearn.metrics import explained_variance_score, mean_absolute_error, mean_squared_error, r2_score
 
 
@@ -84,8 +85,11 @@ def AR_MA(coeff):
     order, model, results = [], [], []
 
     for i in range(1, len(coeff)):
-        order.append(sm.tsa.arma_order_select_ic(coeff[i], ic='aic')['aic_min_order'])   # Select (p, q) by AIC criterion 
-        model.append(ARMA(coeff[i], order=order[i-1]))
+        order.append((sm.tsa.arma_order_select_ic(coeff[i], ic='aic')['aic_min_order'] +(1,)))   # Select (p, q) by AIC criterion 
+        print(order[i-1])
+        #sm.tsa.ardl_select_order()
+        #order.append(sm.tsa.arma_order_select_ic(coeff[i], ic='aic')['aic'])   # Select (p, q) by AIC criterion 
+        model.append(ARIMA(coeff[i], order=order[i-1]))
     
     for i in range(len(model)):
         new_order = list(order[i])
@@ -95,7 +99,7 @@ def AR_MA(coeff):
                 
             except ValueError:                                              # Further determinte the appropriate (p, q) for the model
                 new_order[1] = np.max((0, new_order[1]-1))
-                model[i] = ARMA(coeff[i+1], order=new_order)         
+                model[i] = ARIMA(coeff[i+1], order=new_order)         
 
             if len(results)>= i+1:
                 break                
@@ -135,7 +139,7 @@ def NonlinReg(coeff, regressor='GBR', features=4, interval=0, length=1):
         Y_ = copy.deepcopy(Y)
         for i in range(length):
             X_ = np.concatenate((X_, np.array([np.concatenate((X_[-1][-features+1:], Y_[[-interval-1]]))])))
-            Y_ = np.concatenate((Y_, gbr.predict(X_[-1])))
+            Y_ = np.concatenate((Y_, gbr.predict(X_[-1].reshape(1,-1))))
     
     if regressor == 'SVR':
         svr = svm.SVR(kernel='rbf', C=100, gamma=3).fit(X, Y)
@@ -144,7 +148,7 @@ def NonlinReg(coeff, regressor='GBR', features=4, interval=0, length=1):
         Y_ = copy.deepcopy(Y)
         for i in range(length):
             X_ = np.concatenate((X_, np.array([np.concatenate((X_[-1][-features+1:], Y_[[-interval-1]]))])))
-            Y_ = np.concatenate((Y_, svr.predict(X_[-1])))
+            Y_ = np.concatenate((Y_, svr.predict(X_[-1].reshape(1,-1))))
     
     return Y_
 
