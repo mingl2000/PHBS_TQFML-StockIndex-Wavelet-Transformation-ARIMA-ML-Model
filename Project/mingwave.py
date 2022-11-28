@@ -80,6 +80,7 @@ def GetYahooData(symbol, days=500, interval='1d'):
   return df
 
 def multi_plot_wt(df, wavlet_close, wavlet_high, wavlet_low):
+    plt.margins(0.1)
     fig, ax =  plt.subplots(len(wavlet_close), 1, figsize=figsize)
     for i in range(len(wf_close)):
         if i == 0:
@@ -94,10 +95,13 @@ def multi_plot_wt(df, wavlet_close, wavlet_high, wavlet_low):
             ax[i].plot(df["id"],wavlet_high[i], label = 'high-cD[%.0f]'%(len(wavlet_close)-i))
             ax[i].plot(df["id"],wavlet_low[i], label = 'low-cD[%.0f]'%(len(wavlet_close)-i))
             ax[i].legend(loc = 'best')
-    cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
+    #cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
+    
     plt.show(block=False)
+    return (fig, ax)
     
 def plot_wt(df, colname, wavelet):
+    plt.margins(0.1)
     fig, ax =  plt.subplots(len(wavelet), 1, figsize=figsize,sharex=True)
     for i in range(len(wf_close)):
         if i == 0:
@@ -108,8 +112,10 @@ def plot_wt(df, colname, wavelet):
         else:
             ax[i].plot(df["id"],wavelet[i], label = 'Vol cD[%.0f]'%(len(wavelet)-i))
             ax[i].legend(loc = 'best')
-    cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
+    #cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
+    
     plt.show(block=False)
+    return (fig, ax)
 
 drawchart=True
 historylen=500
@@ -226,12 +232,12 @@ apdict = [mpf.make_addplot(df['coeff_close']),
         mpf.make_addplot((df['coeff_vol']),panel=1,color='r'),
         mpf.make_addplot((df['coeff_vol_01']),panel=1,color='g')]
 
-fig,ax=mpf.plot(df,type='candle',volume=True,addplot=apdict, figsize=figsize,tight_layout=True,style=s,returnfig=True,block=False)
-cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
+fig1,ax1=mpf.plot(df,type='candle',volume=True,addplot=apdict, figsize=figsize,tight_layout=True,style=s,returnfig=True,block=False)
+#cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
 
 
-fig,ax=mpf.plot(df,type='candle',volume=True,addplot=apdict, figsize=figsize,tight_layout=True, panel_ratios=(1,1),style=s,returnfig=True,block=False)
-cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
+fig2,ax2=mpf.plot(df,type='candle',volume=True,addplot=apdict, figsize=figsize,tight_layout=True, panel_ratios=(1,1),style=s,returnfig=True,block=False)
+#cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
 
 apdict = [mpf.make_addplot(df['coeff_close']),
         mpf.make_addplot(df['coeff_high']),
@@ -245,11 +251,12 @@ apdict = [mpf.make_addplot(df['coeff_close']),
         #mpf.make_addplot((df['coeff_vol_01']),panel=1,color='g')
         ]
 
-fig,ax=mpf.plot(df,type='candle',volume=False,addplot=apdict, figsize=figsize,tight_layout=True,returnfig=True,block=False)
-cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
-multi_plot_wt(df, wf_close, wf_high,wf_low)
-plot_wt(df, 'Volume', wf_vol)
-
+fig3,ax3=mpf.plot(df,type='candle',volume=False,addplot=apdict, figsize=figsize,tight_layout=True,returnfig=True,block=False)
+#cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
+(fig4, ax4)=multi_plot_wt(df, wf_close, wf_high,wf_low)
+(fig5, ax5)=plot_wt(df, 'Volume', wf_vol)
+cursor = MultiCursor(None, tuple(ax1)+tuple(ax2)+tuple(ax3)+tuple(ax4)+tuple(ax5), color='r',lw=0.5, horizOn=True, vertOn=True)
+plt.show()
 #crosshairs(xlabel='t',ylabel='F')
 
 
