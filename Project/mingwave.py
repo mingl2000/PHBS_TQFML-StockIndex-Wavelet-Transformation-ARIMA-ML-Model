@@ -255,7 +255,7 @@ fig3,ax3=mpf.plot(df,type='candle',volume=False,addplot=apdict, figsize=figsize,
 #cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
 (fig4, ax4)=multi_plot_wt(df, wf_close, wf_high,wf_low)
 (fig5, ax5)=plot_wt(df, 'Volume', wf_vol)
-cursor = MultiCursor(None, tuple(ax1)+tuple(ax2)+tuple(ax3)+tuple(ax4)+tuple(ax5), color='r',lw=0.5, horizOn=True, vertOn=True)
+#cursor = MultiCursor(None, tuple(ax1)+tuple(ax2)+tuple(ax3)+tuple(ax4)+tuple(ax5), color='r',lw=0.5, horizOn=True, vertOn=True)
 plt.show()
 #crosshairs(xlabel='t',ylabel='F')
 
