@@ -62,7 +62,7 @@ def GetYahooData(symbol, days=500, interval='1d'):
   elif  interval.endswith('w'):
     period=str(days)+'wk'
   elif  interval.endswith('h'):
-    period='730d'
+    period=str(days) +'h'
   elif  interval.endswith('m'):
     period='60d'
   else:
