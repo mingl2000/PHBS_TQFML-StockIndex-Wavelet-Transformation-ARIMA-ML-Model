@@ -170,8 +170,8 @@ df["coeff_vol"] =wf_vol[0]
 df["coeff_close_01"] = wf_close[0]+wf_close[1]
 df["coeff_vol_01"] = wf_vol[0]+wf_vol[1]
 
-print('day                  close         close1       high        high1        low        low1           volume              volume1')
-fmt="{0:18}{1:8.2f} {2:4}{3:8.2f} {4:4}{5:8.2f} {6:4}{7:8.2f} {8:4}{9:8.2f} {8:4}{11:8.2f} {12:4}{13:18,.0f} {14:4}{15:18,.0f} {16:4}"
+print('day                  close         close1       high             high1         low               low1              volume                  volume1')
+fmt="{0:18}{1:8.2f} {2:4}{3:8.2f} {4:4} * {5:8.2f} {6:4} {7:8.2f} {8:4} * {9:8.2f} {8:4} {11:8.2f} {12:4} * {13:18,.0f} {14:4} {15:18,.0f} {16:4}"
 for i in range(daysprint,-1,-1):  
   if wf_close[0][-i-1]>wf_close[0][-i-2]:
     closedir='UP'
