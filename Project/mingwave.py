@@ -35,7 +35,7 @@ import mplfinance as mpf
 import yfinance as yf
 from reliability.Other_functions import crosshairs
 from matplotlib.widgets import MultiCursor
-
+from os.path import exists
 # df = 'ohlc dataframe'
 
 # In[2]:
@@ -67,9 +67,17 @@ def GetYahooData(symbol, days=500, interval='1d'):
     period='60d'
   else:
     period='max'
-  df = yf.download(tickers=symbol, period=period, interval=interval)
-  dataFileName="data/"+symbol+".csv"
-  df.to_csv(dataFileName)
+  dataFileName="data/"+symbol+'_' + interval +".csv"
+  if exists(dataFileName):
+    print('read yahoo data from cache')
+    df=pd.read_csv(dataFileName, header=0, index_col=0, encoding='utf-8', parse_dates=True)
+    #df.index=df["Date"]
+  else:
+    print('read yahoo data from web')
+    df = yf.download(tickers=symbol, period=period, interval=interval)
+    df.to_csv(dataFileName, index=True, date_format='%y-%m-%d %H:%M:%S')
+  #dataFileName="data/"+symbol+".csv"
+  
   #df = pd.read_csv(dataFileName,index_col=0,parse_dates=True)
   #df.shape
   df.head(3)
@@ -119,7 +127,7 @@ def plot_wt(df, colname, wavelet):
 
 drawchart=True
 historylen=500
-interval='1d'
+interval='1h'
 daysprint=89
 if len(sys.argv) ==2:
   ticker=sys.argv[1]
