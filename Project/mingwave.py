@@ -46,15 +46,16 @@ from IPython.display import Image
 
 
 # In[3]:
-def GetYahooData(symbol, days=500, interval='1d'):
-  start=datetime.date.today()-datetime.timedelta(days=days)
-  end=datetime.date.today()
+def GetYahooData(symbol, bars=500, interval='1d'):
+  #start=datetime.date.today()-datetime.timedelta(days=days)
+  #end=datetime.date.today()
   if symbol=='SPX':
     symbol='^GSPC'
   #df=.gepdrt_data_yahoo(symbols=symbol,  start=start, end=end,interval=interval)
   
   #if interval.endswith('m') or interval.endswith('h'):
   #  period='max'
+  '''
   if interval.endswith('1m'):
     period='7d'
   elif interval.endswith('d'):
@@ -67,6 +68,8 @@ def GetYahooData(symbol, days=500, interval='1d'):
     period='60d'
   else:
     period='max'
+  '''
+  period='max'  
   dataFileName="data/"+symbol+'_' +period+'_'+ interval +".csv"
   if exists(dataFileName):
     print('read yahoo data from cache')
@@ -75,11 +78,12 @@ def GetYahooData(symbol, days=500, interval='1d'):
   else:
     print('read yahoo data from web')
     df = yf.download(tickers=symbol, period=period, interval=interval)
-    df.to_csv(dataFileName, index=True, date_format='%y-%m-%d %H:%M:%S')
+    df.to_csv(dataFileName, index=True, date_format='%Y-%m-%d %H:%M:%S')
   #dataFileName="data/"+symbol+".csv"
   
   #df = pd.read_csv(dataFileName,index_col=0,parse_dates=True)
   #df.shape
+  df =df [-bars:]
   df.head(3)
   df.tail(3)
   df["id"]=np.arange(len(df))
@@ -126,7 +130,7 @@ def plot_wt(df, colname, wavelet):
     return (fig, ax)
 
 
-def printwavelet(daysprint, wf_close, wf_high, wf_low, wf_vol):
+def printwavelet(daysprint, df, wf_close, wf_high, wf_low, wf_vol):
   print('day                  close         close1       high             high1         low               low1              volume                  volume1')
   fmt="{0:18}{1:8.2f} {2:4}{3:8.2f} {4:4} * {5:8.2f} {6:4} {7:8.2f} {8:4} * {9:8.2f} {8:4} {11:8.2f} {12:4} * {13:18,.0f} {14:4} {15:18,.0f} {16:4}"
   for i in range(daysprint,-1,-1):  
@@ -171,7 +175,7 @@ def printwavelet(daysprint, wf_close, wf_high, wf_low, wf_vol):
 
 drawchart=True
 historylen=512
-interval='1h'
+interval='1d'
 daysprint=89
 usecache=True
 daystoplot=512
@@ -218,7 +222,7 @@ df["coeff_vol"] =wf_vol[0]
 df["coeff_close_01"] = wf_close[0]+wf_close[1]
 df["coeff_vol_01"] = wf_vol[0]+wf_vol[1]
 
-printwavelet(daysprint, wf_close, wf_high, wf_low, wf_vol)
+printwavelet(daysprint, df,wf_close, wf_high, wf_low, wf_vol)
 '''
 print('day                  close         close1       high             high1         low               low1              volume                  volume1')
 fmt="{0:18}{1:8.2f} {2:4}{3:8.2f} {4:4} * {5:8.2f} {6:4} {7:8.2f} {8:4} * {9:8.2f} {8:4} {11:8.2f} {12:4} * {13:18,.0f} {14:4} {15:18,.0f} {16:4}"
@@ -308,8 +312,9 @@ apdict = [mpf.make_addplot(df['coeff_close']),
 
 fig3,ax3=mpf.plot(df,type='candle',volume=False,addplot=apdict, figsize=figsize,tight_layout=True,returnfig=True,block=False)
 #cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
-(fig4, ax4)=multi_plot_wt(df, wf_close, wf_high,wf_low)
 (fig5, ax5)=plot_wt(df, 'Volume', wf_vol)
+(fig4, ax4)=multi_plot_wt(df, wf_close, wf_high,wf_low)
+
 #cursor = MultiCursor(None, tuple(ax1)+tuple(ax2)+tuple(ax3)+tuple(ax4)+tuple(ax5), color='r',lw=0.5, horizOn=True, vertOn=True)
 plt.show()
 #crosshairs(xlabel='t',ylabel='F')
