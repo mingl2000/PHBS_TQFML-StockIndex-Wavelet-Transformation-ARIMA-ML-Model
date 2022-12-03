@@ -67,7 +67,7 @@ def GetYahooData(symbol, days=500, interval='1d'):
     period='60d'
   else:
     period='max'
-  dataFileName="data/"+symbol+'_' + interval +".csv"
+  dataFileName="data/"+symbol+'_' +period+'_'+ interval +".csv"
   if exists(dataFileName):
     print('read yahoo data from cache')
     df=pd.read_csv(dataFileName, header=0, index_col=0, encoding='utf-8', parse_dates=True)
@@ -125,32 +125,72 @@ def plot_wt(df, colname, wavelet):
     plt.show(block=False)
     return (fig, ax)
 
+
+def printwavelet(daysprint, wf_close, wf_high, wf_low, wf_vol):
+  print('day                  close         close1       high             high1         low               low1              volume                  volume1')
+  fmt="{0:18}{1:8.2f} {2:4}{3:8.2f} {4:4} * {5:8.2f} {6:4} {7:8.2f} {8:4} * {9:8.2f} {8:4} {11:8.2f} {12:4} * {13:18,.0f} {14:4} {15:18,.0f} {16:4}"
+  for i in range(daysprint,-1,-1):  
+    if wf_close[0][-i-1]>wf_close[0][-i-2]:
+      closedir='UP'
+    else:
+      closedir='DOWN'
+    if wf_close[1][-i-1]>wf_close[1][-i-2]:
+      close1dir='UP'
+    else:
+      close1dir='DOWN'
+
+    if wf_high[0][-i-1]>wf_high[0][-i-2]:
+      highdir='UP'
+    else:
+      highdir='DOWN'
+    if wf_high[1][-i-1]>wf_high[1][-i-2]:
+      high1dir='UP'
+    else:
+      high1dir='DOWN'
+
+    if wf_low[0][-i-1]>wf_low[0][-i-2]:
+      lowdir='UP'
+    else:
+      lowdir='DOWN'
+    if wf_low[1][-i-1]>wf_low[1][-i-2]:
+      low1dir='UP'
+    else:
+      low1dir='DOWN'
+    
+    if wf_vol[0][-i-1]>wf_vol[0][-i-2]:
+      voldir='UP'
+    else:
+      voldir='DOWN'
+    if wf_vol[1][-i-1]>wf_vol[1][-i-2]:
+      vol1dir='UP'
+    else:
+      vol1dir='DOWN'
+    
+    print(fmt.format(df.index[-i-1].strftime("%m/%d/%Y %H:%M"), wf_close[0][-i-1],closedir,wf_close[1][-i-1],close1dir,wf_high[0][-i-1],highdir,wf_high[1][-i-1],high1dir,wf_low[0][-i-1],lowdir,wf_low[1][-i-1],low1dir,wf_vol[0][-i-1],voldir,wf_vol[1][-i-1],vol1dir))
+
+
 drawchart=True
-historylen=500
+historylen=512
 interval='1h'
 daysprint=89
-if len(sys.argv) ==2:
-  ticker=sys.argv[1]
-elif len(sys.argv) ==3:
-  ticker=sys.argv[1]
-  historylen=int(sys.argv[2])
-elif len(sys.argv) ==4:
-  ticker=sys.argv[1]
-  historylen=int(sys.argv[2])
-  interval=sys.argv[3]
-elif len(sys.argv) ==5:
-  ticker=sys.argv[1]
-  historylen=int(sys.argv[2])
-  interval=sys.argv[3]
-  drawchart=sys.argv[4].lower()=='true'
-elif len(sys.argv) ==6:
-  ticker=sys.argv[1]
-  historylen=int(sys.argv[2])
-  interval=sys.argv[3]
-  drawchart=sys.argv[4].lower()=='true'
-  daysprint=int(sys.argv[5])
-else:
+usecache=True
+daystoplot=512
+if len(sys.argv) <2:
   ticker='QQQ'
+if len(sys.argv) >=2:
+  ticker=sys.argv[1]
+if len(sys.argv) >=3:
+  historylen=int(sys.argv[2])
+if len(sys.argv) >=4:
+  interval=sys.argv[3]
+if len(sys.argv) >=5:
+  drawchart=sys.argv[4].lower()=='true'
+if len(sys.argv) >=6:
+  daysprint=int(sys.argv[5])
+if len(sys.argv) >=7:
+  usecache=sys.argv[6].lower()=='true'
+if len(sys.argv) >=8:
+  daystoplot=int(sys.argv[7])
 
 
   print("arguments are : Symbol historylen interval drawchart daysprint")
@@ -178,6 +218,8 @@ df["coeff_vol"] =wf_vol[0]
 df["coeff_close_01"] = wf_close[0]+wf_close[1]
 df["coeff_vol_01"] = wf_vol[0]+wf_vol[1]
 
+printwavelet(daysprint, wf_close, wf_high, wf_low, wf_vol)
+'''
 print('day                  close         close1       high             high1         low               low1              volume                  volume1')
 fmt="{0:18}{1:8.2f} {2:4}{3:8.2f} {4:4} * {5:8.2f} {6:4} {7:8.2f} {8:4} * {9:8.2f} {8:4} {11:8.2f} {12:4} * {13:18,.0f} {14:4} {15:18,.0f} {16:4}"
 for i in range(daysprint,-1,-1):  
@@ -218,17 +260,23 @@ for i in range(daysprint,-1,-1):
     vol1dir='DOWN'
   
   print(fmt.format(df.index[-i-1].strftime("%m/%d/%Y %H:%M"), wf_close[0][-i-1],closedir,wf_close[1][-i-1],close1dir,wf_high[0][-i-1],highdir,wf_high[1][-i-1],high1dir,wf_low[0][-i-1],lowdir,wf_low[1][-i-1],low1dir,wf_vol[0][-i-1],voldir,wf_vol[1][-i-1],vol1dir))
+'''
 if not drawchart:
   exit()
 figsize=(26,13)
 
 
+df=df[-daystoplot:]
+for i in range(len(wf_close)):
+  wf_close[i]=wf_close[1][-daystoplot:]
+  wf_low[i]=wf_low[1][-daystoplot:]
+  wf_high[i]=wf_high[1][-daystoplot:]
+  wf_vol[i]=wf_vol[1][-daystoplot:]
 
 mc = mpf.make_marketcolors(
                            volume='lightgray'
                            )
 s  = mpf.make_mpf_style(marketcolors=mc)
-
 apdict = [mpf.make_addplot(df['coeff_close']),
         mpf.make_addplot(df['coeff_high']),
         mpf.make_addplot(df['coeff_low']),
@@ -239,7 +287,6 @@ apdict = [mpf.make_addplot(df['coeff_close']),
         #mpf.make_addplot(wf_vol[1],panel=2,ylabel='wf_vol[1]',y_on_right=False),
         mpf.make_addplot((df['coeff_vol']),panel=1,color='r'),
         mpf.make_addplot((df['coeff_vol_01']),panel=1,color='g')]
-
 fig1,ax1=mpf.plot(df,type='candle',volume=True,addplot=apdict, figsize=figsize,tight_layout=True,style=s,returnfig=True,block=False)
 #cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
 
