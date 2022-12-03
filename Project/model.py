@@ -15,7 +15,23 @@ from statsmodels.tsa.arima.model import ARIMA
 #from statsmodels.tsa.arima_model import ARMA 
 from sklearn.ensemble import GradientBoostingRegressor as GBR
 from sklearn.metrics import explained_variance_score, mean_absolute_error, mean_squared_error, r2_score
+import scipy.stats
+def _bayes_thresh(details, var):
+    """BayesShrink threshold for a zero-mean details coeff array."""
+    # Equivalent to:  dvar = np.var(details) for 0-mean details array
+    dvar = np.mean(details*details)
+    eps = np.finfo(details.dtype).eps
+    thresh = var / np.sqrt(max(dvar - var, eps))    
+    return thresh
+def getAdaptiveThreshold(detail_coeffs):
+    denom = scipy.stats.norm.ppf(0.75)
+    sigma = np.median(np.abs(detail_coeffs)) / denom
+    return sigma
+    #return np.abs(_bayes_thresh(details, var))
 
+def getThreshold(cD):
+    Tr = np.sqrt(2*np.log2(len(cD)))  # Compute Threshold
+    return Tr
 
 def WT(index_list, wavefunc='db4', lv=4, m=1, n=4, plot=False):
     
@@ -38,15 +54,19 @@ def WT(index_list, wavefunc='db4', lv=4, m=1, n=4, plot=False):
 
     # Denoising
     # Soft Threshold Processing Method
+    '''
     for i in range(m,n+1):   #  Select m~n Levels of the wavelet coefficients，and no need to dispose the cA coefficients(approximation coefficients)
         cD = coeff[i]
         Tr = np.sqrt(2*np.log2(len(cD)))  # Compute Threshold
+        Tr=getThreshold(cD)
+        #Tr=getAdaptiveThreshold(cD)
+
         for j in range(len(cD)):
             if cD[j] >= Tr:
                 coeff[i][j] = sgn(cD[j]) * (np.abs(cD[j]) -  Tr)  # Shrink to zero
             else:
                 coeff[i][j] = 0   # Set to zero if smaller than threshold
-
+    '''
     # Reconstructing
     coeffs = {}
     for i in range(len(coeff)):
@@ -85,7 +105,7 @@ def AR_MA(coeff):
     order, model, results = [], [], []
 
     for i in range(1, len(coeff)):
-        order.append((sm.tsa.arma_order_select_ic(coeff[i], ic='aic')['aic_min_order'] +(1,)))   # Select (p, q) by AIC criterion 
+        order.append((sm.tsa.arma_order_select_ic(coeff[i], ic='aic')['aic_min_order'] +(0,)))   # Select (p, q) by AIC criterion 
         print(order[i-1])
         #sm.tsa.ardl_select_order()
         #order.append(sm.tsa.arma_order_select_ic(coeff[i], ic='aic')['aic'])   # Select (p, q) by AIC criterion 
