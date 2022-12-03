@@ -118,8 +118,8 @@ def plot_wt(df, colname, wavelet):
     for i in range(len(wf_close)):
         if i == 0:
             ax[i].plot(df["id"],df[colname], label = colname, color='lightgray')
-            ax[i].plot(df["id"],wavelet[i], label = 'Vol cA[%.0f]'%(len(wavelet)-i-1))
-            
+            ax[i].plot(df["id"],wavelet[i],linewidth=3, label = 'Vol cA[%.0f]'%(len(wavelet)-i-1))
+            ax[i].plot(df["id"],wavelet[i]+wavelet[i+1])
             ax[i].legend(loc = 'best')
         else:
             ax[i].plot(df["id"],wavelet[i], label = 'Vol cD[%.0f]'%(len(wavelet)-i))
@@ -291,12 +291,10 @@ apdict = [mpf.make_addplot(df['coeff_close']),
         #mpf.make_addplot(wf_vol[1],panel=2,ylabel='wf_vol[1]',y_on_right=False),
         mpf.make_addplot((df['coeff_vol']),panel=1,color='r'),
         mpf.make_addplot((df['coeff_vol_01']),panel=1,color='g')]
-#fig1,ax1=mpf.plot(df,type='candle',volume=True,addplot=apdict, figsize=figsize,tight_layout=True,style=s,returnfig=True,block=False)
-#cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
+fig1,ax1=mpf.plot(df,type='candle',volume=True,addplot=apdict, figsize=figsize,tight_layout=True,style=s,returnfig=True,block=False)
 
 
-#fig2,ax2=mpf.plot(df,type='candle',volume=True,addplot=apdict, figsize=figsize,tight_layout=True, panel_ratios=(1,1),style=s,returnfig=True,block=False)
-#cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
+fig2,ax2=mpf.plot(df,type='candle',volume=True,addplot=apdict, figsize=figsize,tight_layout=True, panel_ratios=(1,1),style=s,returnfig=True,block=False)
 
 apdict = [mpf.make_addplot(df['coeff_close']),
         mpf.make_addplot(df['coeff_high']),
@@ -310,8 +308,7 @@ apdict = [mpf.make_addplot(df['coeff_close']),
         #mpf.make_addplot((df['coeff_vol_01']),panel=1,color='g')
         ]
 
-#fig3,ax3=mpf.plot(df,type='candle',volume=False,addplot=apdict, figsize=figsize,tight_layout=True,returnfig=True,block=False)
-#cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
+fig3,ax3=mpf.plot(df,type='candle',volume=False,addplot=apdict, figsize=figsize,tight_layout=True,returnfig=True,block=False)
 (fig5, ax5)=plot_wt(df, 'Volume', wf_vol)
 (fig4, ax4)=multi_plot_wt(df, wf_close, wf_high,wf_low)
 
