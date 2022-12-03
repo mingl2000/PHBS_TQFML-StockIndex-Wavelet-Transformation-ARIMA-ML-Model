@@ -272,10 +272,10 @@ figsize=(26,13)
 
 df=df[-daystoplot:]
 for i in range(len(wf_close)):
-  wf_close[i]=wf_close[1][-daystoplot:]
-  wf_low[i]=wf_low[1][-daystoplot:]
-  wf_high[i]=wf_high[1][-daystoplot:]
-  wf_vol[i]=wf_vol[1][-daystoplot:]
+  wf_close[i]=wf_close[i][-daystoplot:]
+  wf_low[i]=wf_low[i][-daystoplot:]
+  wf_high[i]=wf_high[i][-daystoplot:]
+  wf_vol[i]=wf_vol[i][-daystoplot:]
 
 mc = mpf.make_marketcolors(
                            volume='lightgray'
@@ -291,11 +291,11 @@ apdict = [mpf.make_addplot(df['coeff_close']),
         #mpf.make_addplot(wf_vol[1],panel=2,ylabel='wf_vol[1]',y_on_right=False),
         mpf.make_addplot((df['coeff_vol']),panel=1,color='r'),
         mpf.make_addplot((df['coeff_vol_01']),panel=1,color='g')]
-fig1,ax1=mpf.plot(df,type='candle',volume=True,addplot=apdict, figsize=figsize,tight_layout=True,style=s,returnfig=True,block=False)
+#fig1,ax1=mpf.plot(df,type='candle',volume=True,addplot=apdict, figsize=figsize,tight_layout=True,style=s,returnfig=True,block=False)
 #cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
 
 
-fig2,ax2=mpf.plot(df,type='candle',volume=True,addplot=apdict, figsize=figsize,tight_layout=True, panel_ratios=(1,1),style=s,returnfig=True,block=False)
+#fig2,ax2=mpf.plot(df,type='candle',volume=True,addplot=apdict, figsize=figsize,tight_layout=True, panel_ratios=(1,1),style=s,returnfig=True,block=False)
 #cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
 
 apdict = [mpf.make_addplot(df['coeff_close']),
@@ -310,7 +310,7 @@ apdict = [mpf.make_addplot(df['coeff_close']),
         #mpf.make_addplot((df['coeff_vol_01']),panel=1,color='g')
         ]
 
-fig3,ax3=mpf.plot(df,type='candle',volume=False,addplot=apdict, figsize=figsize,tight_layout=True,returnfig=True,block=False)
+#fig3,ax3=mpf.plot(df,type='candle',volume=False,addplot=apdict, figsize=figsize,tight_layout=True,returnfig=True,block=False)
 #cursor = MultiCursor(None, tuple(ax), color='r',lw=0.5, horizOn=True, vertOn=True)
 (fig5, ax5)=plot_wt(df, 'Volume', wf_vol)
 (fig4, ax4)=multi_plot_wt(df, wf_close, wf_high,wf_low)
