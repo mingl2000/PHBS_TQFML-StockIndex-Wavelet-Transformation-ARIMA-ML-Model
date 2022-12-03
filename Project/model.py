@@ -33,7 +33,7 @@ def getThreshold(cD):
     Tr = np.sqrt(2*np.log2(len(cD)))  # Compute Threshold
     return Tr
 
-def WT(index_list, wavefunc='db4', lv=4, m=1, n=4, plot=False):
+def WT(index_list, wavefunc='db4', lv=3, m=1, n=3, plot=False):
     
     '''
     WT: Wavelet Transformation Function
@@ -54,19 +54,19 @@ def WT(index_list, wavefunc='db4', lv=4, m=1, n=4, plot=False):
 
     # Denoising
     # Soft Threshold Processing Method
-    '''
+    
     for i in range(m,n+1):   #  Select m~n Levels of the wavelet coefficients，and no need to dispose the cA coefficients(approximation coefficients)
         cD = coeff[i]
         Tr = np.sqrt(2*np.log2(len(cD)))  # Compute Threshold
-        Tr=getThreshold(cD)
+        #Tr=getThreshold(cD)
         #Tr=getAdaptiveThreshold(cD)
-
+        #Tr=0
         for j in range(len(cD)):
             if cD[j] >= Tr:
                 coeff[i][j] = sgn(cD[j]) * (np.abs(cD[j]) -  Tr)  # Shrink to zero
             else:
                 coeff[i][j] = 0   # Set to zero if smaller than threshold
-    '''
+    
     # Reconstructing
     coeffs = {}
     for i in range(len(coeff)):
