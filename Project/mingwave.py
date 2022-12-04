@@ -84,12 +84,14 @@ def GetYahooData(symbol, bars=500, interval='1d'):
   
   #df = pd.read_csv(dataFileName,index_col=0,parse_dates=True)
   #df.shape
+  df.dropna(inplace = True)
   df =df [-bars:]
   df.head(3)
   df.tail(3)
   df["id"]=np.arange(len(df))
   #df["date1"]=df.index.astype(str)
   #df["datefmt"]=df.index.strftime('%m/%d/%Y')
+  
   return df
 
 def multi_plot_wt(df, wavlet_close, wavlet_high, wavlet_low):
@@ -176,7 +178,7 @@ def printwavelet(daysprint, df, wf_close, wf_high, wf_low, wf_vol):
 
 drawchart=True
 historylen=512
-interval='1h'
+interval='1wk'
 daysprint=89
 usecache=True
 daystoplot=512
