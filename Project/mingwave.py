@@ -55,21 +55,22 @@ def GetYahooData(symbol, bars=500, interval='1d'):
   
   #if interval.endswith('m') or interval.endswith('h'):
   #  period='max'
-  '''
+  
   if interval.endswith('1m'):
     period='7d'
-  elif interval.endswith('d'):
-    period=str(days)+'d'
-  elif  interval.endswith('w'):
-    period=str(days)+'wk'
-  elif  interval.endswith('h'):
-    period=str(days) +'h'
   elif  interval.endswith('m'):
     period='60d'
+  elif  interval.endswith('h'):
+    period='730d'
   else:
     period='max'
-  '''
-  period='max'  
+  
+  #elif interval.endswith('d'):
+    #period=str(days)+'d'
+  #  period='max'
+  #elif  interval.endswith('w'):
+  #  period=str(days)+'wk'
+  
   dataFileName="data/"+symbol+'_' +period+'_'+ interval +".csv"
   if exists(dataFileName):
     print('read yahoo data from cache')
@@ -175,7 +176,7 @@ def printwavelet(daysprint, df, wf_close, wf_high, wf_low, wf_vol):
 
 drawchart=True
 historylen=512
-interval='1d'
+interval='1h'
 daysprint=89
 usecache=True
 daystoplot=512

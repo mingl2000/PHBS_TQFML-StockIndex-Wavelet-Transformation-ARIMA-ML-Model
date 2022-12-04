@@ -33,6 +33,20 @@ def getThreshold(cD):
     Tr = np.sqrt(2*np.log2(len(cD)))  # Compute Threshold
     return Tr
 
+def WT_DWT(index_list, wavefunc='db4',plot=False):
+    (cA, cD) = pywt.dwt(index_list, wavefunc)
+    cD0=[0]*len(cD)
+    cA0=[0]*len(cD)
+    denoised_index_cA =pywt.idwt(cA, cD0, wavefunc, 'smooth')    
+    denoised_index_cD =pywt.idwt(cA0, cD, wavefunc, 'smooth')    
+    
+    if plot:
+        data = pd.DataFrame({'CLOSE': index_list, 'denoised': denoised_index_cA})
+        data.plot(figsize=(10,10),subplots=(2,1))
+        data.plot(figsize=(10,5))
+ 
+    return (denoised_index_cA, denoised_index_cD)
+
 def WT(index_list, wavefunc='db4', lv=3, m=1, n=3, plot=False):
     
     '''
