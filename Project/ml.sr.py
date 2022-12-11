@@ -85,14 +85,17 @@ def get_optimum_clusters(data, saturation_point=0.05, size=11):
             
     return k_models
 
-if noclusters> len(low):
-    noclusters=len(low)
-if noclusters> len(high):
-    noclusters=len(high)
 
 # index 3 as 4 is the value of K (elbow point)
-low_clusters = get_optimum_clusters(low, saturation_point=saturation_point, size=clustersize)[noclusters]
-high_clusters = get_optimum_clusters(high, saturation_point=saturation_point, size=clustersize)[noclusters]
+low_clusters=get_optimum_clusters(low, saturation_point=saturation_point, size=clustersize)
+high_clusters = get_optimum_clusters(high, saturation_point=saturation_point, size=clustersize)
+if noclusters>= len(low_clusters):
+    noclusters=len(low_clusters)-1
+if noclusters>= len(high_clusters):
+    noclusters=len(high_clusters)-1
+
+low_clusters = low_clusters[noclusters]
+high_clusters = high_clusters[noclusters]
 
 low_centers = low_clusters.cluster_centers_
 high_centers = high_clusters.cluster_centers_
@@ -111,7 +114,9 @@ for i in high_centers:
     hlines.append(i[0])
     colors.append('r')
     #plt.axhline(i, c='r', ls='--')
-mpf.plot(data,type='candle', hlines=dict(hlines=hlines,colors=colors),figsize=figsize, block=False,title='top 3')
+mpf.plot(data,type='candle', hlines=dict(hlines=hlines,colors=colors),figsize=figsize, block=False,title='top ' + str(noclusters) +'clusters')
+for i in range(len(low_centers)):
+    print('top custers: high=', high_centers[i], ' low=', low_centers[i])
 
 #finding the optimum k using the silhouette method
 def optimum_Kvalue(data):
@@ -146,5 +151,9 @@ for i in high_ce:
     hlines.append(i[0])
     colors.append('r')
     #plt.axhline(i, c='r', ls='--')
+
+for i in range(len(low_ce)):
+    print('optimum_Kvalue clusters: high=', high_ce[i], ' low=', low_ce[i])
+
 mpf.plot(data,type='candle', hlines=dict(hlines=hlines,colors=colors),figsize=figsize, title='optimum_Kvalue')
 plt.show()
