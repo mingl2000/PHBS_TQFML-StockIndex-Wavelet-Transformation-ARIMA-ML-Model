@@ -11,8 +11,6 @@ import sys
 style.use('ggplot')
 
 def get1mYahooData(ticker):
-    if ticker.lower()=='spx':
-        ticker='^GSPC'
     end=datetime.date.today()
     start = datetime.date.today()-datetime.timedelta(29)
     end=start+datetime.timedelta(7)
@@ -27,28 +25,47 @@ def get1mYahooData(ticker):
     data=pd.concat(data)
     return data
 
+def getYahooData(ticker, interval='1m'):
+    if ticker.lower()=='spx':
+        ticker='^GSPC'
 
+    if interval=='1m':
+        return get1mYahooData(ticker)
+    
+    if  interval.endswith('m'):
+        period='60d'
+    elif  interval.endswith('h'):
+        period='730d'
+    else:
+        period='max'
+
+    df = yf.download(tickers=ticker, period=period, interval=interval)
+    return df
 
 figsize=(20,15)
 saturation_point=0.05
 clustersize=11
 noclusters=3
-
+interval='1m'
 if len(sys.argv) <2:
   ticker='QQQ'
 if len(sys.argv) >=2:
   ticker=sys.argv[1]
+
 if len(sys.argv) >=3:
-  saturation_point=float(sys.argv[2])
+  interval=sys.argv[2]
+
 if len(sys.argv) >=4:
-  clustersize=int(sys.argv[3])
-
+  saturation_point=float(sys.argv[3])
 if len(sys.argv) >=5:
-  noclusters=int(sys.argv[4])
+  clustersize=int(sys.argv[4])
+
+if len(sys.argv) >=6:
+  noclusters=int(sys.argv[5])
 
 
 
-data=get1mYahooData(ticker)
+data=getYahooData(ticker, interval)
 low = pd.DataFrame(data=data['Low'], index=data.index)
 high = pd.DataFrame(data=data['High'], index=data.index)
 
