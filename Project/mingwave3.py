@@ -178,6 +178,7 @@ def printwavelet(daysprint, df, wf_close, wf_high, wf_low, wf_vol):
     print(fmt.format(df.index[-i-1].strftime("%m/%d/%Y %H:%M"), df['Close'][-i-1], wf_close[0][-i-1],closedir,wf_close[1][-i-1],close1dir,wf_high[0][-i-1],highdir,wf_high[1][-i-1],high1dir,wf_low[0][-i-1],lowdir,wf_low[1][-i-1],low1dir,wf_vol[0][-i-1],voldir,wf_vol[1][-i-1],vol1dir))
 
 
+brick_size=2
 drawchart=True
 historylen=512
 interval='1wk'
@@ -200,6 +201,8 @@ if len(sys.argv) >=7:
   usecache=sys.argv[6].lower()=='true'
 if len(sys.argv) >=8:
   daystoplot=int(sys.argv[7])
+if len(sys.argv) >=9:
+  brick_size=float(sys.argv[8])
 
 
   print("arguments are : Symbol historylen interval drawchart daysprint")
@@ -319,6 +322,7 @@ apdict = [mpf.make_addplot(df['coeff_close']),
         ]
 
 fig3,ax3=mpf.plot(df,type='candle',volume=False,addplot=apdict, figsize=figsize,tight_layout=True,returnfig=True,block=False)
+fig6,ax6=mpf.plot(df,type='renko',volume=False, figsize=figsize,tight_layout=True,returnfig=True,block=False, renko_params=dict(brick_size=brick_size))
 (fig5, ax5)=plot_wt(df, 'Volume', wf_vol)
 (fig4, ax4)=multi_plot_wt(df, wf_close, wf_high,wf_low)
 
