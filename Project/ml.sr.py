@@ -83,12 +83,12 @@ def get_optimum_clusters(data, saturation_point=0.05, size=11):
         
     plt.plot(range(1,size), wcss)
             
-    return k_models
+    return k_models,wcss
 
 
 # index 3 as 4 is the value of K (elbow point)
-low_clusters=get_optimum_clusters(low, saturation_point=saturation_point, size=clustersize)
-high_clusters = get_optimum_clusters(high, saturation_point=saturation_point, size=clustersize)
+low_clusters, wcss_low=get_optimum_clusters(low, saturation_point=saturation_point, size=clustersize)
+high_clusters, wcss_high = get_optimum_clusters(high, saturation_point=saturation_point, size=clustersize)
 if noclusters>= len(low_clusters):
     noclusters=len(low_clusters)-1
 if noclusters>= len(high_clusters):
@@ -110,13 +110,20 @@ for i in low_centers:
     hlines.append(i[0])
     colors.append('g')
     #plt.axhline(i, c='g', ls='--')
+fmt="top custers: i={0}     low={1:8.2f}    wcss={2:8.2f}"
+for i in range(len(low_centers)):
+    print(fmt.format(i, low_centers[i][0],wcss_low[i] ))
+print('')
 for i in high_centers:
     hlines.append(i[0])
     colors.append('r')
     #plt.axhline(i, c='r', ls='--')
-mpf.plot(data,type='candle', hlines=dict(hlines=hlines,colors=colors),figsize=figsize, block=False,title='top ' + str(noclusters) +'clusters')
-for i in range(len(low_centers)):
-    print('top custers: high=', high_centers[i], ' low=', low_centers[i])
+fmt="top custers: i={0}     high={1:8.2f}    wcss={2:8.2f}"
+for i in range(len(high_centers)):
+    print(fmt.format(i, low_centers[i][0],wcss_low[i] ))
+print('')
+
+mpf.plot(data,type='candle', hlines=dict(hlines=hlines,colors=colors),figsize=figsize, block=False,title=(ticker+' top ' + str(noclusters) +'clusters'))
 
 #finding the optimum k using the silhouette method
 def optimum_Kvalue(data):
@@ -146,14 +153,17 @@ colors=[]
 for i in low_ce:
     hlines.append(i[0])
     colors.append('g')
+for i in range(len(low_ce)):
+    print('optimum_Kvalue custers: i=', i,  ' low=', low_ce[i])
+print('')
+
     #plt.axhline(i, c='g', ls='--')
 for i in high_ce:
     hlines.append(i[0])
     colors.append('r')
     #plt.axhline(i, c='r', ls='--')
-
 for i in range(len(low_ce)):
-    print('optimum_Kvalue clusters: high=', high_ce[i], ' low=', low_ce[i])
-
-mpf.plot(data,type='candle', hlines=dict(hlines=hlines,colors=colors),figsize=figsize, title='optimum_Kvalue')
+    print('optimum_Kvalue custers: i=', i,  ' high=', high_ce[i])
+print('')
+mpf.plot(data,type='candle', hlines=dict(hlines=hlines,colors=colors),figsize=figsize, title=(ticker+' optimum_Kvalue'))
 plt.show()
