@@ -36,6 +36,7 @@ import yfinance as yf
 from reliability.Other_functions import crosshairs
 from matplotlib.widgets import MultiCursor
 from os.path import exists
+from talib import ATR
 # df = 'ohlc dataframe'
 
 # In[2]:
@@ -44,6 +45,8 @@ from os.path import exists
 from IPython.display import Image
 #get_ipython().run_line_magic('matplotlib', 'inline')
 
+def getATR(df, ATR_period):
+  return ATR(df["High"], df["Low"], df["Close"], ATR_period)[-1]
 
 # In[3]:
 def GetYahooData(symbol, bars=500, interval='1d'):
@@ -178,13 +181,17 @@ def printwavelet(daysprint, df, wf_close, wf_high, wf_low, wf_vol):
     print(fmt.format(df.index[-i-1].strftime("%m/%d/%Y %H:%M"), df['Close'][-i-1], wf_close[0][-i-1],closedir,wf_close[1][-i-1],close1dir,wf_high[0][-i-1],highdir,wf_high[1][-i-1],high1dir,wf_low[0][-i-1],lowdir,wf_low[1][-i-1],low1dir,wf_vol[0][-i-1],voldir,wf_vol[1][-i-1],vol1dir))
 
 
-brick_size=2
+brick_size=0.1 # real brick_size will be brick_size*ATR(14)
 drawchart=True
 historylen=512
 interval='1wk'
 daysprint=89
 usecache=True
 daystoplot=512
+if len(sys.argv) <1:
+  print("arguments are : Symbol historylen interval drawchart daysprint brick_size_in_ATR")
+  print("interval can be 1m, 5m, 15m, 30m, 1h, 1d, 1wk, 1mo, 3mo")
+  print("python .\mingwave3.py QQQ 256 1d True 20 True 128 0l5")
 if len(sys.argv) <2:
   ticker='QQQ'
 if len(sys.argv) >=2:
@@ -203,15 +210,13 @@ if len(sys.argv) >=8:
   daystoplot=int(sys.argv[7])
 if len(sys.argv) >=9:
   brick_size=float(sys.argv[8])
-
-
-  print("arguments are : Symbol historylen interval drawchart daysprint")
-  print("interval can be 1m, 5m, 15m, 30m, 1h, 1d, 1wk, 1mo, 3mo")
   #exit()
 
 
 #ticker="SPX"
 df= GetYahooData(ticker,historylen,interval)
+brick_size=brick_size*getATR(df, 14)
+
 # import data
 #df = pd.read_csv(filename, header=0, index_col=0, encoding='utf-8')
 df.head()
